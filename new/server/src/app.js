@@ -5,7 +5,11 @@ import { connectDB } from "./config/db.js"
 const app = express()
 
 connectDB()
+app.use(express.json())
+app.use(express.urlencoded({extended:true}))
 
-app.get("/api/auth",authRoute)
+
+
+app.use("/api/auth",authRoute)
 
 export default app

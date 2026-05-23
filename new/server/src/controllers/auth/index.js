@@ -16,13 +16,39 @@ const RefreshToken = newUser.generateRefreshToken()
 
 res.cookie("access",AccessToken).cookie("refresh",RefreshToken)
 
+return res.status(201).json({
+    success:true,
+    message:"User created successfully",
+    user:newUser
+})
 
 })
 
 
 export const loginController = asyncHandler(async(req,res)=>{
+const {email,password} = req.body
+if(!email || !password){
+   throw new Customerror("All field require",400)
+}
+
+const user = await userModel.findOne({email}).select("+password")
+if(!user){
+    throw new Customerror("Invalid credentials",400)}
+
+    const isMatch = await user.comparePassword(password)
+    if(!isMatch){
+        throw new Customerror("Invalid credentials",400)
+    }
     
+    const AccessToken = user.generateAccessToken()
+const RefreshToken = user.generateRefreshToken()
+res.cookie("access",AccessToken).cookie("refresh",RefreshToken)
+
+return res.status(200).json({
+    success:true,
+    message:"User logged in successfully",
+    user
 
 })
 
-
+})
